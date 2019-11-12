@@ -1,0 +1,9 @@
+[package]
+name = "excel2csv"
+version = "0.1.0"
+authors = ["Chris Gearing <gearichr@turntown.com>"]
+edition = "2018"
+
+[dependencies]
+calamine = "0.16.0"
+csv = "1.1.1"
