@@ -1,6 +1,6 @@
 extern crate csv;
 
-use std::env;
+use std::{env, path, fs};
 use calamine::{Xlsx, open_workbook, Reader, Rows};
 use calamine::DataType;
 
@@ -14,16 +14,27 @@ fn get_contents(cell: &DataType) -> String {
         };
 }
 
+fn make_output_dir(directory: &str) -> bool {
+    let output = path::Path::new(directory).is_dir();
+    if output != true {
+        fs::create_dir(directory).unwrap();
+        return true;
+    }
+    return true;
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
-    
     let excel_file = &args[1];
-    let csv_file = &args[2];
+    let output_dir = &args[2];
+
+    make_output_dir(output_dir);
     
-    let mut wtr = csv::Writer::from_path(csv_file).unwrap();
     let mut excel: Xlsx<_> = open_workbook(excel_file).unwrap();
     let sheet_names = excel.sheet_names().to_vec();
     for name in sheet_names {
+        let path = format!("{}/{}", output_dir, name);
+        let mut wtr = csv::Writer::from_path(path).unwrap();
         if let Some(Ok(range)) = excel.worksheet_range(&name) {
             let rows: Rows<DataType> = range.rows();
             for row in rows {
